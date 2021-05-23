@@ -35,5 +35,5 @@ function Urls(props) {
             </BrowserRouter>
         </div>
     )
-};
+}
 export default Urls;
