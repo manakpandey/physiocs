@@ -4,16 +4,23 @@ from django.shortcuts import render
 from rest_auth.views import (LoginView, LogoutView, PasswordChangeView)
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+
+
 # Create your views here.
 class APILogoutView(LogoutView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+
+
 class APILoginView(LoginView):
     pass
+
+
 class APIPasswordUpdateView(PasswordChangeView):
     authentication_classes = [TokenAuthentication]
 
-#prediction
+
+# prediction
 import joblib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -28,7 +35,6 @@ from sklearn.model_selection import train_test_split
 def results(request):
     result = ""
     test_var = int(request.POST["target"])
-    
 
     df = pd.read_csv("E:\\acad\\sem 6\\TARP\\physiocs\\server\\users\\data.csv")
     print(df.head())
@@ -49,25 +55,32 @@ def results(request):
 def recovery(request):
     return render(request, "recovery.html")
 
-#profile
+
+# profile
 def updateUserDetails(request):
     pass
+
 
 def assignTest(request):
     pass
 
-#dashboard
+
+# dashboard
 def getUserDetails(request):
     pass
+
 
 def getTestSchedule(request):
     pass
 
+
 def getTestHistory(request):
     pass
 
+
 def getPrediction(request):
     pass
+
 
 def getTests(request):
     pass
@@ -76,9 +89,6 @@ def getTests(request):
 def saveTest(request):
     pass
 
+
 def saveUserTest(request):
     pass
-
-
-
-
