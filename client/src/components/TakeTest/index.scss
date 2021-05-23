@@ -1,0 +1,15 @@
+.tp-take_test{
+    display: flex;
+    flex-direction: row;
+    .left{
+        flex: 1;
+        min-height: 80vh;
+    }
+    .right{
+        flex: 1;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
