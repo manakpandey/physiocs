@@ -1,5 +1,5 @@
 import React from 'react';
-import Urls from './Urls';
+import Routes from './routes';
 import Layout from './components/Layout';
 import {connect} from 'react-redux';
 import * as actions from './store/authActions';
@@ -10,12 +10,12 @@ function App(props) {
   // Similar to componentDidMount and componentDidUpdate:
   React.useEffect(() => {
     props.setAuthenticatedIfRequired();
-  }, []);
+  }, [props]);
 
   return (
     <div className="App">
       <Layout {...props}>
-         <Urls {...props}/>
+         <Routes {...props}/>
       </Layout>
     </div>
   );

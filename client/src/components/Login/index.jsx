@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
 import { connect } from 'react-redux';
-import * as actions from '../store/authActions';
+import * as actions from '../../store/authActions';
 
 import { useHistory, useLocation } from "react-router-dom";
 
@@ -45,7 +45,7 @@ function Login(props) {
   let { from } = location.state || { from: { pathname: "/" } };
 
   React.useEffect(() => {
-    if (props.isAuthenticated) { history.replace(from) };
+    if (props.isAuthenticated) { history.replace(from) }
   });
 
 

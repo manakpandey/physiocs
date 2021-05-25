@@ -1,6 +1,6 @@
 import React from 'react';
-import TopBar from "./TopBar"
-import Footer from "./Footer"
+import TopBar from "../TopBar"
+import Footer from "../Footer"
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 

@@ -12,12 +12,17 @@ from django.http import HttpResponse
 class APILogoutView(LogoutView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+
+
 class APILoginView(LoginView):
     pass
+
+
 class APIPasswordUpdateView(PasswordChangeView):
     authentication_classes = [TokenAuthentication]
 
-#prediction
+
+# prediction
 import joblib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -32,7 +37,6 @@ from sklearn.model_selection import train_test_split
 def results(request):
     result = ""
     test_var = int(request.POST["target"])
-    
 
     df = pd.read_csv("E:\\acad\\sem 6\\TARP\\physiocs\\server\\users\\data.csv")
     print(df.head())
@@ -53,14 +57,17 @@ def results(request):
 def recovery(request):
     return render(request, "recovery.html")
 
-#profile
+
+# profile
 def updateUserDetails(request):
     pass
+
 
 def assignTest(request):
     pass
 
-#dashboard
+
+# dashboard
 def getUserDetails(request):
     idx=int(request.GET['id'])
     q='SELECT * FROM users_user where id='+str(idx)+';'
@@ -69,6 +76,7 @@ def getUserDetails(request):
 
 
     
+
 
 def getTestSchedule(request):
     pid=int(request.GET['patient_id'])
@@ -79,6 +87,7 @@ def getTestSchedule(request):
 
     
 
+
 def getTestHistory(request):
     pid=int(request.GET['patient_id'])
     q='SELECT * FROM users_testHistory where patient_id='+str(pid)+';'
@@ -86,8 +95,10 @@ def getTestHistory(request):
        
 
 
+
 def getPrediction(request):
     pass
+
 
 def getTests(request):
     tid=int(request.GET['tid'])

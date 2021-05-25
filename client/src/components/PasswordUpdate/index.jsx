@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import * as settings from '../settings';
+import * as settings from '../../settings';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Avatar, Button, Container, CssBaseline, TextField, Typography } from '@material-ui/core';
@@ -59,7 +59,7 @@ function PasswordUpdate(props) {
       passwordFormData.append("new_password2", new_password2);
       let config = { headers, method, url, data: passwordFormData};
       //Axios update_password API call
-      axios(config).then(res => {
+      axios(config).then(() => {
         setSuccess(true);
       }).catch(
         error => {
