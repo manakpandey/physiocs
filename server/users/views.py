@@ -1,9 +1,13 @@
 from django.shortcuts import render
+from datetime import datetime
 
 # Create your views here.
 from rest_auth.views import (LoginView, LogoutView, PasswordChangeView)
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from .models import *
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
 # Create your views here.
 class APILogoutView(LogoutView):
     authentication_classes = [TokenAuthentication]
@@ -58,26 +62,66 @@ def assignTest(request):
 
 #dashboard
 def getUserDetails(request):
-    pass
+    idx=int(request.GET['id'])
+    q='SELECT * FROM users_user where id='+str(idx)+';'
+    for p in User.objects.raw(q):
+        return HttpResponse(p)
+
+
+    
 
 def getTestSchedule(request):
-    pass
+    pid=int(request.GET['patient_id'])
+    q='SELECT * FROM users_schedule where users_schedule.patient_id='+str(pid)+';'
+    for p in Schedule.objects.raw(q):
+        return HttpResponse(p)
+
+
+    
 
 def getTestHistory(request):
-    pass
+    pid=int(request.GET['patient_id'])
+    q='SELECT * FROM users_testHistory where patient_id='+str(pid)+';'
+    return HttpResponse(TestHistory.objects.raw(q))
+       
+
 
 def getPrediction(request):
     pass
 
 def getTests(request):
-    pass
+    tid=int(request.GET['tid'])
+    q='SELECT * FROM users_testDetails where id='+str(tid)+';'
+    for p in TestDetails.objects.raw(q):
+        return HttpResponse(p)    
 
-
+@csrf_exempt
 def saveTest(request):
-    pass
+    testName=str(request.POST.get("testName"))
+    testDescription=str(request.POST.get("testDescription",False))
+    jointName= str(request.POST.get("jointName",False))
+    minAngle=int(request.POST.get("minangle",False))
+    maxAngle=int(request.POST.get("maxAngle", False))
+    reps=int(request.POST.get("reps",False))
+    time=int(request.POST.get("time",False))
+    img=str(request.POST.get("string",False))
+    
+#    q= 'insert into Users_testDetails values ("'+str(testName)+'","'+str(testDescription)+'","'+str(jointName)+'",'+str(minAngle)+','+str(maxAngle)+','+str(reps)+','+str(time)+',"'+str(img)+  '");'
+    x=TestDetails.objects.create(testName=testName, testDescription=testDescription,jointName=jointName, minAngle=minAngle, maxAngle=maxAngle, reps=reps, timePerRep=time, img=img)
+    x.save()
+    return HttpResponse(None)
 
+@csrf_exempt
 def saveUserTest(request):
-    pass
+    pid=(request.POST.get("pid"))
+    tid=int(request.POST.get("tid"))
+    range=float(request.POST.get("range"))
+    time=str(request.POST.get("time"))
+    x=TestHistory.objects.create(patient=User.objects.get(id=pid), test=TestDetails.objects.get(id=tid), range=range, timeStamp=time)
+
+    x.save()
+    return HttpResponse(None)
+
 
 
 
