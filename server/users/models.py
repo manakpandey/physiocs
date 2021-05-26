@@ -16,23 +16,25 @@ class User(models.Model):
 
 class TestDetails(models.Model):
     testName= models.CharField(max_length=100)
+    testDescription= models.CharField(max_length=10000, default="Test")
     jointName= models.CharField(max_length=100)
     minAngle= models.IntegerField(null=True)
     maxAngle= models.IntegerField(null=True)
     reps= models.IntegerField()
     timePerRep= models.IntegerField(null=True)
+    img=models.ImageField(upload_to ='uploads/')
 
 
 class TestHistory(models.Model):
-    patientID= models.ForeignKey(User, on_delete=models.PROTECT)
-    testID= models.ForeignKey(TestDetails, on_delete=models.PROTECT)
+    patient= models.ForeignKey(User, on_delete=models.PROTECT)
+    test= models.ForeignKey(TestDetails, on_delete=models.PROTECT)
     range= models.DecimalField(decimal_places=2,max_digits=5)
     timeStamp= models.DateTimeField(datetime.now())
 
 
 class Schedule(models.Model):
-    patientID= models.ForeignKey(User, on_delete=models.PROTECT)
-    testID= models.ForeignKey(TestDetails, on_delete=models.PROTECT)
+    patient= models.ForeignKey(User, on_delete=models.PROTECT)
+    test= models.ForeignKey(TestDetails, on_delete=models.PROTECT)
     date= models.DateField()
 
 
