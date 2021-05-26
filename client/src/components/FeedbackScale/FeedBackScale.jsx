@@ -1,5 +1,5 @@
 import React from 'react';
-import './index.css';
+import { makeStyles, Typography } from '@material-ui/core';
 
 import A1 from '../../assets/emojis/1.png';
 import A2 from '../../assets/emojis/2.png';
@@ -8,10 +8,63 @@ import A4 from '../../assets/emojis/4.png';
 import A5 from '../../assets/emojis/5.png';
 import A6 from '../../assets/emojis/6.png';
 
+
+
 function handleClick(selectedPainCategory) {
     // Function passed as props to handle pain selection    
     //clickMe(selectedPainCategory);
+    console.log(selectedPainCategory);
 }
+
+const useStyles = makeStyles((theme) => ({
+    container: {
+        /* background-color: #d2ccff; */
+        borderRadius: '5px',
+    },    
+    emojiContainer: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-around',
+    },
+    header1: {
+        marginBottom: '5px',
+        textAlign: 'center',
+    },
+    header2: {
+        textAlign: 'center',
+        marginBottom: '60px',
+    },
+    emojiCard: {
+        justifyContent: 'center',
+        width: '64px',
+    },
+    emojiDesc: {
+        fontSize: '24px',
+        overflowX: 'visible',
+        textAlign: 'center',
+        display: 'block',
+        typography: {
+            fontFamily: 'Roboto',
+        },
+    },
+    emoji: {
+        width: '64px',
+        height: '64px',
+        display: 'block',
+        borderRadius: '32px',
+        transitionDuration: '0.3s',
+        marginBottom: '10px',
+        "&:hover": {
+            borderRadius: '36px',
+            width: '72px',
+            height: '72px',
+            transitionDuration: '0.3s',
+        },
+    },
+    typography: {
+        fontFamily: 'Roboto',
+    },
+}));
 
 function getColor(index) {
     switch(index) {
@@ -32,26 +85,27 @@ function getColor(index) {
     }
 }
 
-var createButtons = () => {
-    const imgArray = [A1,A2,A3,A4,A5,A6];
-    const descArray = ["No Pain", "Very Minor Pain", "Hurts a Little Less", "Hurts a Little More", "Hurts a Lot", "I'm Dead"];
-    return imgArray.map((img, index) => {
-        return (
-            <div className="emoji-card" onClick={handleClick(descArray[index])}>
-                <img className="emoji" src={img} alt={descArray[index]} style={{backgroundColor: getColor(index)}}></img>
-                <text className="emoji-desc">{descArray[index]}</text>
-            </div>
-        );
-    });
-}
-
 export default function FeedBackScale(clickMe) {
+    const classes = useStyles();
     
+    var createButtons = () => {
+        const imgArray = [A1,A2,A3,A4,A5,A6];
+        const descArray = ["No Pain", "Very Minor Pain", "Hurts a Little Less", "Hurts a Little More", "Hurts a Lot", "I'm Dead"];
+        return imgArray.map((img, index) => {
+            return (
+                <div className={classes.emojiCard} key={index}>
+                    <img className={classes.emoji} src={img} alt={descArray[index]} onClick={() => handleClick(descArray[index])} style={{backgroundColor: getColor(index)}}></img>
+                    <Typography variant="body1" component="body1" className={classes.emojiDesc}>{descArray[index]}</Typography>
+                </div>
+            );
+        });
+    }
+
     return (
-        <div className="container">
-            <h1>Self-Assessment Pain Scale</h1>
-            <h2>Categorical SAPS</h2>
-            <div className="emoji-container">
+        <div className={classes.container}>
+            <Typography variant="h3" component="h3" className={classes.header1}>Self-Assessment Pain Scale</Typography>
+            <Typography variant="h5" component="h5" className={classes.header2}>Categorical SAPS</Typography>
+            <div className={classes.emojiContainer}>
                 {createButtons()}
             </div>
         </div>
