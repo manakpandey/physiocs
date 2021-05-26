@@ -7,7 +7,7 @@ function checkAngleWithinLimits(reqdAngle, obtdAngle) {
 }
 
 export default function checkRep(obtdAngles, testDetails, angleAtPos) {
-    // angleAtPos -> which position (flex or relax)
+    // angleAtPos -> String -> which position (flex or relax) 
     // testDetails.jointName -> which joint we're looking for
     // obtdAngles[] -> the angle associated with the above joint
     
