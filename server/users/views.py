@@ -34,28 +34,28 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 
 
-def results(request):
-    result = ""
-    test_var = int(request.POST["target"])
+def results(df, target):
+    # result = ""
+    # test_var = int(request.POST["target"])
 
-    df = pd.read_csv("E:\\acad\\sem 6\\TARP\\physiocs\\server\\users\\data.csv")
-    print(df.head())
+    # df = pd.read_csv("E:\\acad\\sem 6\\TARP\\physiocs\\server\\users\\data.csv")
+    print(df)
     X_train, X_test, y_train, y_test = train_test_split(df["X"].values.reshape(-1, 1), df["y"], test_size=0.1)
     regr = LinearRegression()
     regr.fit(X_train, y_train)
     y_pred = regr.predict(X_test)
-    plt.scatter(X_test, y_test, color='b')
-    plt.plot(X_test, y_pred, color='k')
-    plt.savefig("E:\\acad\\sem 6\\TARP\\physiocs\\server\\users\\graph.png")
-    plt.show()
-    joblib.dump(regr, "model.sav")
-    days = round(regr.predict(np.array([test_var]).reshape(-1, 1)).tolist()[0], 1)
-    result += str(floor(days)) + " to " + str(ceil(days))
-    return render(request, 'results.html', {"result": result})
+    # plt.scatter(X_test, y_test, color='b')
+    # plt.plot(X_test, y_pred, color='k')
+    # plt.savefig("E:\\acad\\sem 6\\TARP\\physiocs\\server\\users\\graph.png")
+    # plt.show()
+    # joblib.dump(regr, "model.sav")
+    days = round(regr.predict(np.array([target]).reshape(-1, 1)).tolist()[0], 1)
+    if days.is_integer():
+        return str(int(days))
+    else:
+        return str(floor(days)) + " - " + str(ceil(days))
 
 
-def recovery(request):
-    return render(request, "recovery.html")
 
 
 # profile
@@ -63,19 +63,26 @@ def updateUserDetails(request):
     pass
 
 
-def assignTest(request):
-    pass
+# def assignTest(request):
+#     pass
 
 
 # dashboard
 def getUserDetails(request):
     idx=int(request.GET['id'])
-    q='SELECT * FROM users_user where id='+str(idx)+';'
-    for p in User.objects.raw(q):
+    q='SELECT * FROM users_userDetails where id='+str(idx)+';'
+    for p in UserDetails.objects.raw(q):
         return HttpResponse(p)
 
 
-    
+def getUserPerfromedTests(request):
+    pid=int(request.GET['pid'])
+    ans=TestHistory.objects.filter(patient_id=pid)
+    s=set()
+    for i in ans:
+        s.add(i.test_id)
+    print(s)
+    return s   
 
 
 def getTestSchedule(request):
@@ -90,14 +97,39 @@ def getTestSchedule(request):
 
 def getTestHistory(request):
     pid=int(request.GET['patient_id'])
-    q='SELECT * FROM users_testHistory where patient_id='+str(pid)+';'
+    q='SELECT *, testName FROM users_testHistory x inner join users_testDetails y on x.test_id=y.id where x.patient_id='+str(pid)+' ;'
+    for i in TestHistory.objects.raw(q):
+        print(i.testname)
     return HttpResponse(TestHistory.objects.raw(q))
        
-
+def getUserType(request):
+    id=int(request.GET['id'])
+    q='SELECT userType FROM users_userDetails where id='+str(id)+';'
+  
+    return HttpResponse(UserDetails.objects.raw(q))
 
 
 def getPrediction(request):
-    pass
+    pid=int(request.GET['pid'])
+    tid=int(request.GET['tid'])
+    ans=TestHistory.objects.filter(patient_id=pid, test_id=tid).order_by('-timestamp')
+    for i in ans:
+        print(i.range)
+    #q="SELECT range FROM users_testHistory WHERE patient_id="+str(pid)+"AND test_id="+str(tid)+ " ORDER BY timestamp ASC;"
+    range=[]
+    days=[]
+    i=1
+    for testPerformed in ans:
+        range.append(testPerformed.range)
+        days.append(i)
+        i+=1
+
+    df = pd.DataFrame(list(zip(range, days)),
+                      columns=['X', 'y'])
+    target = TestDetails.objects.get(pk=tid).maxangle
+
+    result = results(df, target)
+    return HttpResponse(result)
 
 
 def getTests(request):
@@ -128,11 +160,19 @@ def saveUserTest(request):
     tid=int(request.POST.get("tid"))
     range=float(request.POST.get("range"))
     time=str(request.POST.get("time"))
-    x=TestHistory.objects.create(patient=User.objects.get(id=pid), test=TestDetails.objects.get(id=tid), range=range, timeStamp=time)
+    x=TestHistory.objects.create(patient=UserDetails.objects.get(id=pid), test=TestDetails.objects.get(id=tid), range=range, timeStamp=time)
 
     x.save()
     return HttpResponse(None)
 
+
+@csrf_exempt
+def scheduleTest(request):
+    pid=(request.POST.get("pid"))
+    tid=int(request.POST.get("tid"))
+    x= Schedule.objects.create(patient=UserDetails.objects.get(id=pid), test=TestDetails.objects.get(id=tid))
+    x.save()
+    return HttpResponse(None)
 
 
 
