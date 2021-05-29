@@ -7,7 +7,6 @@ urlpatterns = [
     path('logout/', APILogoutView.as_view(), name='api_logout'),
     path('update_password/', APIPasswordUpdateView.as_view(), name='api_update_password'),
     path('results', views.results, name="results"),
-    path('updateUserDetails', views.updateUserDetails, name="updateUserDetails"),
     path('getUserDetails', views.getUserDetails, name='getUserDetails'),
     path('getUserType', views.getUserType, name='getUserType'),
     path('getTestSchedule', views.getTestSchedule, name="getTestSchedule"),
@@ -17,7 +16,7 @@ urlpatterns = [
     path('saveTest', views.saveTest, name="saveTest"),
     path('scheduleTest', views.scheduleTest, name="scheduleTest"),
     path('getUserPerfromedTests', views.getUserPerfromedTests, name="getUserPerfromedTests"),
-
+    path('getPatientsForPhysio', views.getPatientsForPhysio, name="getPatientsForPhysio"),
     path('saveUserTest', views.saveUserTest, name='saveUserTest'),
 
     

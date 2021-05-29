@@ -57,14 +57,12 @@ def results(df, target):
 
 
 
+def getPatientsForPhysio(request):
+    phid=int(request.GET['phid'])
+    q='select * from users_userDetails where users_userDetails.physioid_id='+str(phid)+';'
+    return HttpResponse(UserDetails.objects.raw(q))
 
-# profile
-def updateUserDetails(request):
-    pass
 
-
-# def assignTest(request):
-#     pass
 
 
 # dashboard
@@ -82,7 +80,7 @@ def getUserPerfromedTests(request):
     for i in ans:
         s.add(i.test_id)
     print(s)
-    return s   
+    return HttpResponse(s)    
 
 
 def getTestSchedule(request):
