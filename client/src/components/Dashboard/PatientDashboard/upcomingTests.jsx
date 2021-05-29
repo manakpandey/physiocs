@@ -12,13 +12,6 @@ import axios from "axios";
 import * as settings from "../../../settings";
 import { useHistory } from "react-router";
 
-// Generate Order Data
-function createData(testName, tid) {
-  return { testName, tid };
-}
-
-const rows = [createData("Elow flex", 123), createData("Knee flex", 124)];
-
 const useStyles = makeStyles((theme) => ({
   seeMore: {
     marginTop: theme.spacing(3),
