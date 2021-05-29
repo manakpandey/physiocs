@@ -100,7 +100,7 @@ export default function UpcomingTests() {
         </TableBody>
       </Table>
       <div className={classes.seeMore}>
-        <Typography variant="subtitle2" color="secondary">
+        <Typography variant="subtitle2" color="secondary" align="center">
           Physiocs
         </Typography>
       </div>
