@@ -64,9 +64,8 @@ def updateUserDetails(request):
 # dashboard
 def getUserDetails(request):
     idx = int(request.GET['id'])
-    q = 'SELECT * FROM users_userDetails where id=' + str(idx) + ';'
-    for p in UserDetails.objects.raw(q):
-        return HttpResponse(p)
+    q = UserDetails.objects.filter(uid=User.objects.get(pk=idx))
+    return JsonResponse(list(q.values()), safe=False)
 
 
 def getUserPerformedTests(request):
@@ -88,12 +87,10 @@ def getTestSchedule(request):
 
 
 def getTestHistory(request):
-    pid = int(request.GET['patient_id'])
-    q = 'SELECT *, testName FROM users_testHistory x inner join users_testDetails y on x.test_id=y.id where x.patient_id=' + str(
-        pid) + ' ;'
-    for i in TestHistory.objects.raw(q):
-        print(i.testname)
-    return HttpResponse(TestHistory.objects.raw(q))
+    if request.user.is_authenticated:
+        q = TestHistory.objects.filter(patient=request.user)
+        return JsonResponse(list(q.values()), safe=False)
+    return HttpResponse(status=401)
 
 
 def getUser(request):
@@ -165,15 +162,15 @@ def saveTest(request):
 
 @csrf_exempt
 def saveUserTest(request):
-    pid = (request.POST.get("pid"))
-    tid = int(request.POST.get("tid"))
-    range = float(request.POST.get("range"))
-    time = str(request.POST.get("time"))
-    x = TestHistory.objects.create(patient=UserDetails.objects.get(id=pid), test=TestDetails.objects.get(id=tid),
-                                   range=range, timeStamp=time)
-
-    x.save()
-    return HttpResponse(None)
+    if request.user.is_authenticated:
+        tid = int(request.POST.get("tid"))
+        r = float(request.POST.get("range"))
+        fs = int(request.POST.get("feedback"))
+        x = TestHistory.objects.create(patient=request.user, test=TestDetails.objects.get(id=tid),
+                                       range=r, feedback_state=fs)
+        x.save()
+        return HttpResponse(status=201)
+    return HttpResponse(status=401)
 
 
 @csrf_exempt
