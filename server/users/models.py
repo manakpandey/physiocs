@@ -6,6 +6,9 @@ from django.contrib.auth.models import User
 # Create your models here.
 class UserDetails(models.Model):
     uid = models.OneToOneField(User, on_delete=models.PROTECT, related_name='related_uid', unique=True)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    email = models.EmailField()
     phone = models.CharField(max_length=50)
     address = models.CharField(max_length=150)
     usertype = models.IntegerField()

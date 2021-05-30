@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import * as settings from "../../../settings";
 import PatientDashboard from "../PatientDashboard";
+import PhysioDashboard from "../PhysioDashboard";
 
 export default function DashRouter() {
   useEffect(() => {
@@ -22,5 +23,15 @@ export default function DashRouter() {
     }
   };
 
-  return <>{userType == 0 ? <PatientDashboard /> : <div>Loading...</div>}</>;
+  return (
+    <>
+      {userType == 0 ? (
+        <PatientDashboard />
+      ) : userType == 1 ? (
+        <PhysioDashboard />
+      ) : (
+        <div>Loading...</div>
+      )}
+    </>
+  );
 }

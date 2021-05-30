@@ -35,7 +35,6 @@ export const TakeTest = () => {
   const [currRep, setRep] = useState(0);
   const [start, setStart] = useState(false);
   const [ready, setReady] = useState(false);
-  const [countType, setCountType] = useState("Rest");
   const [k, setK] = useState(0);
   useEffect(() => {
     getTestsDetails();

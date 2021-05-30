@@ -82,7 +82,6 @@ def getUserPerformedTests(request):
 def getTestSchedule(request):
     if request.user.is_authenticated:
         q = Schedule.objects.filter(patient=request.user)
-        print(q.values(), request.user.id)
         return JsonResponse(list(q.values()), safe=False)
     else:
         return JsonResponse(status=401, safe=False, data={})
@@ -100,6 +99,14 @@ def getTestHistory(request):
 def getUser(request):
     if request.user.is_authenticated:
         q = UserDetails.objects.filter(uid=request.user)
+        return JsonResponse(list(q.values()), safe=False)
+    else:
+        return JsonResponse(status=401, safe=False, data={})
+
+
+def getPhysioUsers(request):
+    if request.user.is_authenticated:
+        q = UserDetails.objects.filter(physio_id=request.user)
         return JsonResponse(list(q.values()), safe=False)
     else:
         return JsonResponse(status=401, safe=False, data={})
@@ -134,6 +141,11 @@ def getTests(request):
     return JsonResponse(list(q.values()), safe=False)
 
 
+def getAllTests(request):
+    q = TestDetails.objects.all()
+    return JsonResponse(list(q.values()))
+
+
 @csrf_exempt
 def saveTest(request):
     testName = str(request.POST.get("testName"))
@@ -145,7 +157,6 @@ def saveTest(request):
     time = int(request.POST.get("time", False))
     img = str(request.POST.get("string", False))
 
-    #    q= 'insert into Users_testDetails values ("'+str(testName)+'","'+str(testDescription)+'","'+str(jointName)+'",'+str(minAngle)+','+str(maxAngle)+','+str(reps)+','+str(time)+',"'+str(img)+  '");'
     x = TestDetails.objects.create(testName=testName, testDescription=testDescription, jointName=jointName,
                                    minAngle=minAngle, maxAngle=maxAngle, reps=reps, timePerRep=time, img=img)
     x.save()

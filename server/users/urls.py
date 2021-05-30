@@ -10,13 +10,15 @@ urlpatterns = [
     path('updateUserDetails', views.updateUserDetails, name="updateUserDetails"),
     path('getUserDetails', views.getUserDetails, name='getUserDetails'),
     path('getUser', views.getUser, name='getUser'),
+    path('getPhysioUsers', views.getPhysioUsers, name='getPhysioUsers'),
     path('getTestSchedule', views.getTestSchedule, name="getTestSchedule"),
     path('getTestHistory', views.getTestHistory, name="getTestHistory"),
     path('getPrediction', views.getPrediction, name="getPrediction"),
     path('getTests', views.getTests, name="getTests"),
+    path('getAllTests', views.getAllTests, name="getAllTests"),
     path('saveTest', views.saveTest, name="saveTest"),
     path('scheduleTest', views.scheduleTest, name="scheduleTest"),
-    path('getUserPerfromedTests', views.getUserPerformedTests, name="getUserPerfromedTests"),
+    path('getUserPerfromedTests', views.getUserPerformedTests, name="getUserPerformedTests"),
 
     path('saveUserTest', views.saveUserTest, name='saveUserTest'),
 
