@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import MenuItem from '@material-ui/core/MenuItem';
-
+import axios from "axios";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -55,10 +55,71 @@ export default function CreateTest() {
   const classes = useStyles();
 
   const [joint, setJoint] = useState("");
+  const [testName, setTestName] = useState("");
+  const [testDesc, setTestDesc] = useState("");
+  const [relaxAngle, setRelaxAngle] = useState();
+  const [flexAngle, setFlexAngle] = useState();
+  const [numReps, setNumReps] = useState();
+  const [file, setFile] = useState("");
 
   const handleJoint = (event) => {
     setJoint(event.target.value);
-    console.log(joint);
+    //console.log(joint);
+  }
+
+  const handleTestName = (event) => {
+    setTestName(event.target.value);
+    //console.log(testName);
+  }
+
+  const handleTestDesc = (event) => {
+    setTestDesc(event.target.value);
+    //console.log(testDesc);
+  }
+
+  const handleRelaxAngle = (event) => {
+    setRelaxAngle(event.target.value);
+    //console.log(relaxAngle);
+  }
+
+  const handleFlexAngle = (event) => {
+    setFlexAngle(event.target.value);
+    //console.log(flexAngle);
+  }
+
+  const handleNumReps = (event) => {
+    setNumReps(event.target.value);
+    //console.log(numReps);
+  }
+
+  const handleFile = (event) => {
+    setFile(event.target.files[0]);
+    //console.log(file);
+  }
+
+  function handleSubmit() {
+      let formData = new FormData();
+      formData.append('testName', testName);
+      formData.append('testDesc', testDesc);
+      formData.append('joint', joint);
+      formData.append('relaxAngle', relaxAngle);
+      formData.append('flexAngle', flexAngle);
+      formData.append('numReps', numReps);
+      formData.append('file', file);
+
+      for (var pair of formData.entries()) {
+        console.log(pair[0]+ ', ' + pair[1]); 
+      }
+      
+      const config = {
+        headers: { 'content-type': 'multipart/form-data' }
+      }
+
+      axios.post("sexyManak", {formData}, config).then(res => {
+        console.log(res);
+        console.log(res.data);
+      })
+
   }
 
   return (
@@ -82,7 +143,8 @@ export default function CreateTest() {
                 label="Enter Test Name"
                 type="text"
                 name="testName"
-                autoComplete="testName"
+                value={testName}
+                onChange={handleTestName}
               />
             </Grid>
 
@@ -95,14 +157,14 @@ export default function CreateTest() {
                 label="Enter a Test Description"
                 type="text"
                 name="testDesc"
-                autoComplete="testDesc"
+                value={testDesc}
+                onChange={(e) => handleTestDesc(e)}
               />
             </Grid>
 
             <Grid item xs={12}>
               <TextField
-                labelId="demo-simple-select-label"
-                id="demo-simple-select" fullWidth
+                id="jointName" fullWidth
                 label="Select Joint"
                 value={joint}
                 onChange={handleJoint}
@@ -128,7 +190,8 @@ export default function CreateTest() {
                 label="Relaxed Angle"
                 type="decimal"
                 name="relaxedAngle"
-                autoComplete="relaxedAngle"
+                value={relaxAngle}
+                onChange={(e) => handleRelaxAngle(e)}
               />
             </Grid>
 
@@ -140,8 +203,9 @@ export default function CreateTest() {
                 name="flexAngle"
                 label="Flexed Angle"
                 type="decimal"
-                id="flexAngle"
-                autoComplete="flexAngle"
+                id="flexedAngle"
+                value={flexAngle}
+                onChange={(e) => handleFlexAngle(e)}
               />
             </Grid>
 
@@ -155,8 +219,9 @@ export default function CreateTest() {
                 label="Number of Reps"
                 type="integer"
                 id="numReps"
-                autoComplete="numReps"
                 step="1"
+                value={numReps}
+                onChange={(e) => handleNumReps(e)}
               />
             </Grid>
             <Grid item xs={3}></Grid>
@@ -171,12 +236,14 @@ export default function CreateTest() {
                 Upload File
                 <input 
                   type="file"
+                  id="file"
                   accept="image/*"
-                  hidden/>
+                  onChange={(e) => handleFile(e)}
+                  hidden />
               </Button>
             </Grid>
             <Grid item xs={7}>
-              <hr></hr><text>Please provide a sample photo</text>
+              <hr></hr>{file==""?"Please provide a sample photo":"Thanks for uploading a sample photo"}
             </Grid>
 
             <Grid item xs={12}>
@@ -188,11 +255,12 @@ export default function CreateTest() {
           </Grid>
 
           <Button
-            type="submit"
+            type="button"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={handleSubmit}
           >
             Create Test
           </Button>
