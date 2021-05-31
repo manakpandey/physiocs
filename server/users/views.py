@@ -145,19 +145,20 @@ def getAllTests(request):
 
 @csrf_exempt
 def saveTest(request):
-    testName = str(request.POST.get("testName"))
-    testDescription = str(request.POST.get("testDescription", False))
-    jointName = str(request.POST.get("jointName", False))
-    minAngle = int(request.POST.get("minangle", False))
-    maxAngle = int(request.POST.get("maxAngle", False))
-    reps = int(request.POST.get("reps", False))
-    time = int(request.POST.get("time", False))
-    img = str(request.POST.get("string", False))
+    test_name = str(request.POST.get("testName"))
+    test_description = str(request.POST.get("testDescription"))
+    joint_name = str(request.POST.get("jointName"))
+    min_angle = int(request.POST.get("minAngle"))
+    max_angle = int(request.POST.get("maxAngle"))
+    reps = int(request.POST.get("reps"))
+    time = int(request.POST.get("time", 10))
+    # img = request.POST.get("string", False)
+    # print(img)
 
-    x = TestDetails.objects.create(testName=testName, testDescription=testDescription, jointName=jointName,
-                                   minAngle=minAngle, maxAngle=maxAngle, reps=reps, timePerRep=time, img=img)
+    x = TestDetails.objects.create(test_name=test_name, test_description=test_description, joint_name=joint_name,
+                                   min_angle=min_angle, max_angle=max_angle, reps=reps, time_per_rep=time)
     x.save()
-    return HttpResponse(None)
+    return HttpResponse(status=201)
 
 
 @csrf_exempt
