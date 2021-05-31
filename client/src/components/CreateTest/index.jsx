@@ -125,7 +125,14 @@ export default function CreateTest() {
           title: "Succesful",
           text: "New test created",
         });
-        // TODO: Reset all states
+        
+        setNumReps(0);
+        setRelaxAngle(0);
+        setFlexAngle(0);
+        setJoint("");
+        setTestDesc("");
+        setTestName("");
+        setFile("");
       }
     } catch (e) {
       console.log(e);
