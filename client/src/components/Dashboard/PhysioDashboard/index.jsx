@@ -11,6 +11,7 @@ import Button from "@material-ui/core/Button";
 import UserDetails from "./userDetails";
 import CreateTest from "../../CreateTest";
 import ScheduleTest from "../../ScheduleTest";
+import { Tabs, Tab } from "@material-ui/core";
 
 function Copyright() {
   return (
@@ -117,28 +118,37 @@ export default function PatientDashboard() {
 
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <Grid
-          container
-          spacing={3}
-          style={{ margin: 12, position: "absolute" }}
-        >
-          <Grid item xs={12}>
-            <Button variant="contained" onClick={() => setPage(0)}>
-              Patient Details
-            </Button>
-          </Grid>
-          <Grid item xs={12}>
-            <Button variant="contained" onClick={() => setPage(1)}>
-              Create New Test
-            </Button>
-          </Grid>
-          <Grid item xs={12}>
-            <Button variant="contained" onClick={() => setPage(2)}>
-              Assign Test
-            </Button>
-          </Grid>
-        </Grid>
-
+        <div style={{display: 'flex', width:'70%', marginLeft:'15%', justifyContent: 'space-around'}}>
+          <div style={{height:'80px'}}>
+          <Tabs>
+            <Tab label="Patient Details"
+              style={{marginRight:'10px',
+                marginLeft:'10px',
+                fontSize:'16px',
+                borderBottom:page==0?'3px solid #f6a5c0':'none',
+                boxShadow: page==0?'4px 10px 10px 2px #888888':'none'}}
+              onClick={() => setPage(0)}
+            />
+            <Tab label="Create New Test"
+              style={{marginRight:'10px',
+                fontSize:'16px',
+                marginLeft:'10px',
+                borderBottom:page==1?'3px solid #f6a5c0':'none',
+                boxShadow: page==1?'4px 10px 10px 2px #888888':'none'}}
+              onClick={() => setPage(1)}
+            />
+            <Tab label="Assign Test"
+              style={{marginRight:'10px',
+                marginLeft:'10px',
+                fontSize:'16px',
+                borderBottom:page==2?'3px solid #f6a5c0':'none',
+                boxShadow: page==2?'4px 10px 10px 2px #888888':'none'}}
+              onClick={() => setPage(2)}
+            />
+          </Tabs>
+          </div>
+        </div>
+        
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -153,9 +163,6 @@ export default function PatientDashboard() {
               </Paper>
             </Grid>
           </Grid>
-          <Box pt={4}>
-            <Copyright />
-          </Box>
         </Container>
       </main>
     </div>

@@ -140,7 +140,7 @@ def getTests(request):
 
 def getAllTests(request):
     q = TestDetails.objects.all()
-    return JsonResponse(list(q.values()))
+    return JsonResponse(list(q.values()), safe=False)
 
 
 @csrf_exempt
@@ -176,8 +176,8 @@ def saveUserTest(request):
 
 @csrf_exempt
 def scheduleTest(request):
-    pid = (request.POST.get("pid"))
+    pid = int(request.POST.get("pid"))
     tid = int(request.POST.get("tid"))
-    x = Schedule.objects.create(patient=UserDetails.objects.get(id=pid), test=TestDetails.objects.get(id=tid))
+    x = Schedule.objects.create(patient=User.objects.get(pk=pid), test=TestDetails.objects.get(pk=tid))
     x.save()
-    return HttpResponse(None)
+    return HttpResponse(status=201)
