@@ -18,9 +18,6 @@ urlpatterns = [
     path('getAllTests', views.getAllTests, name="getAllTests"),
     path('saveTest', views.saveTest, name="saveTest"),
     path('scheduleTest', views.scheduleTest, name="scheduleTest"),
-    path('getUserPerfromedTests', views.getUserPerformedTests, name="getUserPerformedTests"),
-
+    path('getUserPerfommedTests', views.getUserPerformedTests, name="getUserPerformedTests"),
     path('saveUserTest', views.saveUserTest, name='saveUserTest'),
-
-    
 ]
