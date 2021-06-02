@@ -8,16 +8,15 @@ urlpatterns = [
     path('update_password/', APIPasswordUpdateView.as_view(), name='api_update_password'),
     path('results', views.results, name="results"),
     path('getUserDetails', views.getUserDetails, name='getUserDetails'),
-    path('getUserType', views.getUserType, name='getUserType'),
+    path('getUser', views.getUser, name='getUser'),
+    path('getPhysioUsers', views.getPhysioUsers, name='getPhysioUsers'),
     path('getTestSchedule', views.getTestSchedule, name="getTestSchedule"),
     path('getTestHistory', views.getTestHistory, name="getTestHistory"),
     path('getPrediction', views.getPrediction, name="getPrediction"),
     path('getTests', views.getTests, name="getTests"),
+    path('getAllTests', views.getAllTests, name="getAllTests"),
     path('saveTest', views.saveTest, name="saveTest"),
     path('scheduleTest', views.scheduleTest, name="scheduleTest"),
-    path('getUserPerfromedTests', views.getUserPerfromedTests, name="getUserPerfromedTests"),
-    path('getPatientsForPhysio', views.getPatientsForPhysio, name="getPatientsForPhysio"),
+    path('getUserPerfommedTests', views.getUserPerformedTests, name="getUserPerformedTests"),
     path('saveUserTest', views.saveUserTest, name='saveUserTest'),
-
-    
 ]

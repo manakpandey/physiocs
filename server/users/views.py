@@ -1,13 +1,18 @@
-from django.shortcuts import render
-from datetime import datetime
-
 # Create your views here.
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from rest_auth.views import (LoginView, LogoutView, PasswordChangeView)
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .models import *
-from django.views.decorators.csrf import csrf_exempt
+import numpy as np
+import pandas as pd
+from math import ceil, floor
 from django.http import HttpResponse
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from .models import *
+
+
 # Create your views here.
 class APILogoutView(LogoutView):
     authentication_classes = [TokenAuthentication]
@@ -23,15 +28,6 @@ class APIPasswordUpdateView(PasswordChangeView):
 
 
 # prediction
-import joblib
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-from math import ceil, floor
-from django.http import HttpResponse
-from django.shortcuts import render
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
 
 
 def results(df, target):
@@ -50,128 +46,152 @@ def results(df, target):
     # plt.show()
     # joblib.dump(regr, "model.sav")
     days = round(regr.predict(np.array([target]).reshape(-1, 1)).tolist()[0], 1)
-    if days.is_integer():
-        return str(int(days))
-    else:
-        return str(floor(days)) + " - " + str(ceil(days))
+    print("days", days)
+    return int(days)
 
 
-
-def getPatientsForPhysio(request):
-    phid=int(request.GET['phid'])
-    q='select * from users_userDetails where users_userDetails.physioid_id='+str(phid)+';'
-    return HttpResponse(UserDetails.objects.raw(q))
+# profile
+def updateUserDetails(request):
+    pass
 
 
 
 
 # dashboard
 def getUserDetails(request):
-    idx=int(request.GET['id'])
-    q='SELECT * FROM users_userDetails where id='+str(idx)+';'
-    for p in UserDetails.objects.raw(q):
-        return HttpResponse(p)
+    idx = int(request.GET['id'])
+    q = UserDetails.objects.filter(uid=User.objects.get(pk=idx))
+    return JsonResponse(list(q.values()), safe=False)
 
 
-def getUserPerfromedTests(request):
-    pid=int(request.GET['pid'])
-    ans=TestHistory.objects.filter(patient_id=pid)
-    s=set()
+def getUserPerformedTests(request):
+    pid = int(request.GET['pid'])
+    ans = TestHistory.objects.filter(patient_id=pid)
+    s = set()
     for i in ans:
         s.add(i.test_id)
     print(s)
-    return HttpResponse(s)    
+    return s
 
 
 def getTestSchedule(request):
-    pid=int(request.GET['patient_id'])
-    q='SELECT * FROM users_schedule where users_schedule.patient_id='+str(pid)+';'
-    for p in Schedule.objects.raw(q):
-        return HttpResponse(p)
-
-
-    
+    if request.user.is_authenticated:
+        q = Schedule.objects.filter(patient=request.user)
+        return JsonResponse(list(q.values()), safe=False)
+    else:
+        return JsonResponse(status=401, safe=False, data={})
 
 
 def getTestHistory(request):
-    pid=int(request.GET['patient_id'])
-    q='SELECT *, testName FROM users_testHistory x inner join users_testDetails y on x.test_id=y.id where x.patient_id='+str(pid)+' ;'
-    for i in TestHistory.objects.raw(q):
-        print(i.testname)
-    return HttpResponse(TestHistory.objects.raw(q))
-       
-def getUserType(request):
-    id=int(request.GET['id'])
-    q='SELECT userType FROM users_userDetails where id='+str(id)+';'
-  
-    return HttpResponse(UserDetails.objects.raw(q))
+    if request.user.is_authenticated:
+        q = TestHistory.objects.filter(patient=request.user)
+        return JsonResponse(list(q.values()), safe=False)
+    return HttpResponse(status=401)
+
+
+def getUser(request):
+    print(request)
+    if request.user.is_authenticated:
+        q = UserDetails.objects.filter(uid=request.user)
+        return JsonResponse(list(q.values()), safe=False)
+    else:
+        return JsonResponse(status=401, safe=False, data={})
+
+
+def getPhysioUsers(request):
+    if request.user.is_authenticated:
+        q = UserDetails.objects.filter(physio_id=request.user)
+        return JsonResponse(list(q.values()), safe=False)
+    else:
+        return JsonResponse(status=401, safe=False, data={})
 
 
 def getPrediction(request):
-    pid=int(request.GET['pid'])
-    tid=int(request.GET['tid'])
-    ans=TestHistory.objects.filter(patient_id=pid, test_id=tid).order_by('-timestamp')
-    for i in ans:
-        print(i.range)
-    #q="SELECT range FROM users_testHistory WHERE patient_id="+str(pid)+"AND test_id="+str(tid)+ " ORDER BY timestamp ASC;"
-    range=[]
-    days=[]
-    i=1
-    for testPerformed in ans:
-        range.append(testPerformed.range)
-        days.append(i)
-        i+=1
+    if request.user.is_authenticated:
+        pid = UserDetails.objects.filter(uid=request.user)
+    l=pid.values()
+    
+    d=l.first()
+    a=set()
+    print(d["id"])
+    arr=[]
+    x=TestHistory.objects.filter(patient_id=d["id"])
+    print(x)
+    for i in x:
+        a.add(i.test_id)
+    
+    for tid in a:
+        ans = TestHistory.objects.filter(patient_id=d["id"], test_id=tid).order_by('-timestamp')[::-1]
+        for i in ans:
+            print(i.range)
+        
+        # q="SELECT range FROM users_testHistory WHERE patient_id="+str(pid)+"AND test_id="+str(tid)+ " ORDER BY timestamp ASC;"
+        range = []
+        days = []
+        i = 1
+        for testPerformed in ans:
+            range.append(testPerformed.range)
+            days.append(i)
+            i += 1
 
-    df = pd.DataFrame(list(zip(range, days)),
-                      columns=['X', 'y'])
-    target = TestDetails.objects.get(pk=tid).maxangle
+        df = pd.DataFrame(list(zip(range, days)),
+                        columns=['X', 'y'])
+        target = TestDetails.objects.get(pk=tid).max_angle
 
-    result = results(df, target)
-    return HttpResponse(result)
+        result = results(df, target)
+        arr.append(result)
+    
+    ans=sum(arr)/len(arr)
+    return HttpResponse(ceil(ans))
 
 
 def getTests(request):
-    tid=int(request.GET['tid'])
-    q='SELECT * FROM users_testDetails where id='+str(tid)+';'
-    for p in TestDetails.objects.raw(q):
-        return HttpResponse(p)    
+    tid = int(request.GET['tid'])
+    q = TestDetails.objects.filter(pk=tid)
+    return JsonResponse(list(q.values()), safe=False)
+
+
+def getAllTests(request):
+    q = TestDetails.objects.all()
+    return JsonResponse(list(q.values()), safe=False)
+
 
 @csrf_exempt
 def saveTest(request):
-    testName=str(request.POST.get("testName"))
-    testDescription=str(request.POST.get("testDescription",False))
-    jointName= str(request.POST.get("jointName",False))
-    minAngle=int(request.POST.get("minangle",False))
-    maxAngle=int(request.POST.get("maxAngle", False))
-    reps=int(request.POST.get("reps",False))
-    time=int(request.POST.get("time",False))
-    img=str(request.POST.get("string",False))
-    
-#    q= 'insert into Users_testDetails values ("'+str(testName)+'","'+str(testDescription)+'","'+str(jointName)+'",'+str(minAngle)+','+str(maxAngle)+','+str(reps)+','+str(time)+',"'+str(img)+  '");'
-    x=TestDetails.objects.create(testName=testName, testDescription=testDescription,jointName=jointName, minAngle=minAngle, maxAngle=maxAngle, reps=reps, timePerRep=time, img=img)
+    test_name = str(request.POST.get("testName"))
+    test_description = str(request.POST.get("testDescription"))
+    joint_name = str(request.POST.get("jointName"))
+    min_angle = int(request.POST.get("minAngle"))
+    max_angle = int(request.POST.get("maxAngle"))
+    reps = int(request.POST.get("reps"))
+    time = int(request.POST.get("time", 10))
+    # img = request.POST.get("string", False)
+    # print(img)
+
+    x = TestDetails.objects.create(test_name=test_name, test_description=test_description, joint_name=joint_name,
+                                   min_angle=min_angle, max_angle=max_angle, reps=reps, time_per_rep=time)
     x.save()
-    return HttpResponse(None)
+    return HttpResponse(status=201)
+
 
 @csrf_exempt
 def saveUserTest(request):
-    pid=(request.POST.get("pid"))
-    tid=int(request.POST.get("tid"))
-    range=float(request.POST.get("range"))
-    time=str(request.POST.get("time"))
-    x=TestHistory.objects.create(patient=UserDetails.objects.get(id=pid), test=TestDetails.objects.get(id=tid), range=range, timeStamp=time)
-
-    x.save()
-    return HttpResponse(None)
+    if request.user.is_authenticated:
+        tid = int(request.POST.get("tid"))
+        r = float(request.POST.get("range"))
+        fs = int(request.POST.get("feedback"))
+        x = TestHistory.objects.create(patient=request.user, test=TestDetails.objects.get(id=tid),
+                                       range=r, feedback_state=fs)
+        x.save()
+        print(x)
+        return HttpResponse(status=201)
+    return HttpResponse(status=401)
 
 
 @csrf_exempt
 def scheduleTest(request):
-    pid=(request.POST.get("pid"))
-    tid=int(request.POST.get("tid"))
-    x= Schedule.objects.create(patient=UserDetails.objects.get(id=pid), test=TestDetails.objects.get(id=tid))
+    pid = int(request.POST.get("pid"))
+    tid = int(request.POST.get("tid"))
+    x = Schedule.objects.create(patient=User.objects.get(pk=pid), test=TestDetails.objects.get(pk=tid))
     x.save()
-    return HttpResponse(None)
-
-
-
-
+    return HttpResponse(status=201)

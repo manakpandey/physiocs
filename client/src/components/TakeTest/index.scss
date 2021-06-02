@@ -1,15 +1,34 @@
-.tp-take_test{
+.tp-take_test {
+  display: flex;
+  flex-direction: row;
+  padding-top: 64px;
+  .left {
+    flex: 1;
+    min-height: 80vh;
     display: flex;
-    flex-direction: row;
-    .left{
-        flex: 1;
-        min-height: 80vh;
+    flex-direction: column;
+    align-items: center;
+
+    .counter {
+      margin: 64px;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      justify-content: center;
+
+      & > * {
+        margin: 12px;
+      }
     }
-    .right{
-        flex: 1;
-        min-height: 80vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .starter {
+      margin: 64px;
     }
+  }
+  .right {
+    flex: 1;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }

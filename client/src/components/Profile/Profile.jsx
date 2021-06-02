@@ -8,6 +8,7 @@ import AssignmentIndOutlinedIcon from '@material-ui/icons/AssignmentIndOutlined'
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import MenuItem from '@material-ui/core/MenuItem';
 
 
 
@@ -53,21 +54,40 @@ export default function ScheduleTest() {
           <AssignmentIndOutlinedIcon />
         </Avatar>
         <Typography component="h4" variant="h4">
-          Profile
+          Schedule a Test
         </Typography>
         <form className={classes.form}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography>Name</Typography>
+              <TextField
+                id="demo-simple-select" 
+                fullWidth
+                label="Select Patient"
+                required
+                variant="outlined"
+                select
+                //value={''}
+              >
+              </TextField>
             </Grid>
 
             <Grid item xs={12}>
-              <Typography>Email</Typography>
-             
-            </Grid>
-            <Grid item xs={12}>
-              <Typography>Mobile no.</Typography>
-             
+              <TextField
+                labelId="demo-simple-select-label"
+                id="demo-simple-select" fullWidth
+                label="Select Test"
+                value={joint}
+                onChange={handleJoint}
+                required
+                select
+                variant="outlined"
+              >
+                {/*joints.map((joint) => {
+                  return <MenuItem value={joint} key={joint}>
+                  {joint}
+                </MenuItem>
+                })*/}
+              </TextField>
             </Grid>
           </Grid>
           <Button
@@ -77,7 +97,7 @@ export default function ScheduleTest() {
             color="primary"
             className={classes.submit}
           >
-            Update Password
+            Schedule Test
           </Button>
         </form>
       </div>

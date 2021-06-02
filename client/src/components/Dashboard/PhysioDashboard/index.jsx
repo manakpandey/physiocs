@@ -1,5 +1,4 @@
-import React from "react";
-import clsx from "clsx";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Box from "@material-ui/core/Box";
@@ -8,15 +7,17 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Link from "@material-ui/core/Link";
-import Chart from "./chart";
-import Predictions from "./predictions";
-import UpcomingTests from "./upcomingTests";
+import Button from "@material-ui/core/Button";
+import UserDetails from "./userDetails";
+import CreateTest from "../../CreateTest";
+import ScheduleTest from "../../ScheduleTest";
+import { Tabs, Tab } from "@material-ui/core";
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
+      <Link color="inherit" href="/">
         Physiocs
       </Link>{" "}
       {new Date().getFullYear()}
@@ -108,7 +109,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PatientDashboard() {
   const classes = useStyles();
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
+  const [page, setPage] = useState(0);
 
   return (
     <div className={classes.root}>
@@ -116,30 +118,51 @@ export default function PatientDashboard() {
 
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
+        <div style={{display: 'flex', width:'70%', marginLeft:'15%', justifyContent: 'space-around'}}>
+          <div style={{height:'80px'}}>
+          <Tabs>
+            <Tab label="Patient Details"
+              style={{marginRight:'10px',
+                marginLeft:'10px',
+                fontSize:'16px',
+                borderBottom:page==0?'3px solid #f6a5c0':'none',
+                boxShadow: page==0?'4px 10px 10px 2px #888888':'none'}}
+              onClick={() => setPage(0)}
+            />
+            <Tab label="Create New Test"
+              style={{marginRight:'10px',
+                fontSize:'16px',
+                marginLeft:'10px',
+                borderBottom:page==1?'3px solid #f6a5c0':'none',
+                boxShadow: page==1?'4px 10px 10px 2px #888888':'none'}}
+              onClick={() => setPage(1)}
+            />
+            <Tab label="Assign Test"
+              style={{marginRight:'10px',
+                marginLeft:'10px',
+                fontSize:'16px',
+                borderBottom:page==2?'3px solid #f6a5c0':'none',
+                boxShadow: page==2?'4px 10px 10px 2px #888888':'none'}}
+              onClick={() => setPage(2)}
+            />
+          </Tabs>
+          </div>
+        </div>
+        
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
-            {/* Chart*/}
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}>
-                <Chart />
-              </Paper>
-            </Grid>
-            {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                <Predictions />
-              </Paper>
-            </Grid>
-            {/* Recent Orders */}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <UpcomingTests />
+                {page == 0 ? (
+                  <UserDetails />
+                ) : page == 1 ? (
+                  <CreateTest />
+                ) : (
+                  <ScheduleTest />
+                )}
               </Paper>
             </Grid>
           </Grid>
-          <Box pt={4}>
-            <Copyright />
-          </Box>
         </Container>
       </main>
     </div>
