@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
-import Login from "./components/Login";
+import Login from "./components/Profile/Profile";
 import Home from "./components/Home";
 import PasswordUpdate from "./components/PasswordUpdate";
 import { TakeTest } from "./components/TakeTest";
