@@ -1,31 +1,48 @@
-import React from 'react';
-import { useTheme } from '@material-ui/core/styles';
-import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from 'recharts';
-import Title from './title';
-
-// Generate Sales Data
-function createData(time, amount) {
-  return { time, amount };
-}
-
-const data = [
-  createData('00:00', 0),
-  createData('03:00', 300),
-  createData('06:00', 600),
-  createData('09:00', 800),
-  createData('12:00', 1500),
-  createData('15:00', 2000),
-  createData('18:00', 2400),
-  createData('21:00', 2400),
-  createData('24:00', undefined),
-];
+import React, { useEffect, useState } from "react";
+import { useTheme } from "@material-ui/core/styles";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Label,
+  ResponsiveContainer,
+} from "recharts";
+import Title from "./title";
+import * as settings from "../../../settings";
+import axios from "axios";
+import _ from "lodash";
 
 export default function Chart() {
   const theme = useTheme();
 
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const [data, setData] = useState([]);
+
+  const getData = async () => {
+    try {
+      const res = await axios.get(
+        `${settings.API_SERVER}/api/auth/getTestHistory`,
+        { withCredentials: true }
+      );
+      const d = _.forEach(_.sortBy(res.data, "timestamp"), function (c) {
+        const da = new Date(c.timestamp);
+        c["timestamp"] = da.toLocaleString();
+        return c;
+      });
+
+      setData(d);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <React.Fragment>
-      <Title>Today</Title>
+      <Title>Pain Trend</Title>
       <ResponsiveContainer>
         <LineChart
           data={data}
@@ -36,17 +53,22 @@ export default function Chart() {
             left: 24,
           }}
         >
-          <XAxis dataKey="time" stroke={theme.palette.text.secondary} />
+          <XAxis dataKey="timestamp" stroke={theme.palette.text.secondary} />
           <YAxis stroke={theme.palette.text.secondary}>
             <Label
               angle={270}
               position="left"
-              style={{ textAnchor: 'middle', fill: theme.palette.text.primary }}
+              style={{ textAnchor: "middle", fill: theme.palette.text.primary }}
             >
-              Pain
+              Pain Level
             </Label>
           </YAxis>
-          <Line type="monotone" dataKey="amount" stroke={theme.palette.primary.main} dot={false} />
+          <Line
+            type="monotone"
+            dataKey="feedback_state"
+            stroke={theme.palette.primary.main}
+            dot={false}
+          />
         </LineChart>
       </ResponsiveContainer>
     </React.Fragment>
