@@ -1,4 +1,4 @@
-function checkAngleWithinLimits(reqdAngle, obtdAngle) {
+export function checkAngleWithinLimits(reqdAngle, obtdAngle) {
     // Absolute difference between the angles
     if(Math.abs(reqdAngle - obtdAngle) < 15)
         return true;
@@ -6,10 +6,10 @@ function checkAngleWithinLimits(reqdAngle, obtdAngle) {
         return false;
 }
 
-export default function checkRep(obtdAngles, testDetails, angleAtPos) {
+/*function checkRep1(obtdAngles, testDetails, angleAtPos) {
     // angleAtPos -> String -> which position (flex or relax) 
     // testDetails.jointName -> which joint we're looking for
     // obtdAngles[] -> the angle associated with the above joint
     
     return checkAngleWithinLimits(testDetails[angleAtPos],obtdAngles[testDetails.jointName]);
-}
+}*/
