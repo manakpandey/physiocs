@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import * as settings from "../../../settings";
-import PatientDashboard from "../../Profile/Profile";
+import PatientDashboard from "../PatientDashboard/";
 import PhysioDashboard from "../PhysioDashboard";
 
 export default function DashRouter() {
