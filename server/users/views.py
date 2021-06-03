@@ -46,10 +46,8 @@ def results(df, target):
     # plt.show()
     # joblib.dump(regr, "model.sav")
     days = round(regr.predict(np.array([target]).reshape(-1, 1)).tolist()[0], 1)
-    if days.is_integer():
-        return str(int(days))
-    else:
-        return str(floor(days)) + " - " + str(ceil(days))
+    print("days", days)
+    return int(days)
 
 
 # profile
@@ -57,8 +55,6 @@ def updateUserDetails(request):
     pass
 
 
-# def assignTest(request):
-#     pass
 
 
 # dashboard
@@ -94,6 +90,7 @@ def getTestHistory(request):
 
 
 def getUser(request):
+    print(request)
     if request.user.is_authenticated:
         q = UserDetails.objects.filter(uid=request.user)
         return JsonResponse(list(q.values()), safe=False)
@@ -110,26 +107,42 @@ def getPhysioUsers(request):
 
 
 def getPrediction(request):
-    pid = int(request.GET['pid'])
-    tid = int(request.GET['tid'])
-    ans = TestHistory.objects.filter(patient_id=pid, test_id=tid).order_by('-timestamp')
-    for i in ans:
-        print(i.range)
-    # q="SELECT range FROM users_testHistory WHERE patient_id="+str(pid)+"AND test_id="+str(tid)+ " ORDER BY timestamp ASC;"
-    range = []
-    days = []
-    i = 1
-    for testPerformed in ans:
-        range.append(testPerformed.range)
-        days.append(i)
-        i += 1
+    if request.user.is_authenticated:
+        pid = UserDetails.objects.filter(uid=request.user)
+    l=pid.values()
+    
+    d=l.first()
+    a=set()
+    print(d["id"])
+    arr=[]
+    x=TestHistory.objects.filter(patient_id=d["id"])
+    print(x)
+    for i in x:
+        a.add(i.test_id)
+    
+    for tid in a:
+        ans = TestHistory.objects.filter(patient_id=d["id"], test_id=tid).order_by('-timestamp')[::-1]
+        for i in ans:
+            print(i.range)
+        
+        # q="SELECT range FROM users_testHistory WHERE patient_id="+str(pid)+"AND test_id="+str(tid)+ " ORDER BY timestamp ASC;"
+        range = []
+        days = []
+        i = 1
+        for testPerformed in ans:
+            range.append(testPerformed.range)
+            days.append(i)
+            i += 1
 
-    df = pd.DataFrame(list(zip(range, days)),
-                      columns=['X', 'y'])
-    target = TestDetails.objects.get(pk=tid).maxangle
+        df = pd.DataFrame(list(zip(range, days)),
+                        columns=['X', 'y'])
+        target = TestDetails.objects.get(pk=tid).max_angle
 
-    result = results(df, target)
-    return HttpResponse(result)
+        result = results(df, target)
+        arr.append(result)
+    
+    ans=sum(arr)/len(arr)
+    return HttpResponse(ceil(ans))
 
 
 def getTests(request):
@@ -170,6 +183,7 @@ def saveUserTest(request):
         x = TestHistory.objects.create(patient=request.user, test=TestDetails.objects.get(id=tid),
                                        range=r, feedback_state=fs)
         x.save()
+        print(x)
         return HttpResponse(status=201)
     return HttpResponse(status=401)
 

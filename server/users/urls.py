@@ -7,7 +7,6 @@ urlpatterns = [
     path('logout/', APILogoutView.as_view(), name='api_logout'),
     path('update_password/', APIPasswordUpdateView.as_view(), name='api_update_password'),
     path('results', views.results, name="results"),
-    path('updateUserDetails', views.updateUserDetails, name="updateUserDetails"),
     path('getUserDetails', views.getUserDetails, name='getUserDetails'),
     path('getUser', views.getUser, name='getUser'),
     path('getPhysioUsers', views.getPhysioUsers, name='getPhysioUsers'),
