@@ -6,10 +6,9 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Title from "./title";
-import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
 import axios from "axios";
 import * as settings from "../../../settings";
-import { useHistory } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -17,19 +16,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function TestRow({ id, tid }) {
+function TestRow({ id, hist }) {
   useEffect(() => {
     getTestsDetails();
-  }, [tid]);
-
-  const history = useHistory();
+  }, [hist]);
 
   const [data, setData] = useState();
 
   const getTestsDetails = async () => {
     try {
       const res = await axios.get(
-        `${settings.API_SERVER}/api/auth/getTests?tid=${tid}`,
+        `${settings.API_SERVER}/api/auth/getTests?tid=${hist.test_id}`,
         { withCredentials: true }
       );
       setData(res.data[0]);
@@ -43,38 +40,28 @@ function TestRow({ id, tid }) {
       <TableRow>
         <TableCell>{id}</TableCell>
         <TableCell>{data?.test_name}</TableCell>
-        <TableCell align="right">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => history.push(`/test/${data?.id}`)}
-          >
-            ATTEMPT TEST
-          </Button>
-        </TableCell>
+        <TableCell>{hist?.range}</TableCell>
+        <TableCell>{hist?.feedback_state}</TableCell>
+        <TableCell align="right">{hist?.timestamp}</TableCell>
       </TableRow>
     </>
   );
 }
 
-export default function UpcomingTests() {
+export default function TestHistory() {
   useEffect(() => {
-    getTests();
+    getData();
   }, []);
 
-  const [tids, setTids] = useState([]);
+  const [data, setData] = useState([]);
 
-  const getTests = async () => {
+  const getData = async () => {
     try {
       const res = await axios.get(
-        `${settings.API_SERVER}/api/auth/getTestSchedule`,
+        `${settings.API_SERVER}/api/auth/getTestHistory`,
         { withCredentials: true }
       );
-      const x = [];
-      for (let i = 0; i < res.data.length; i++) {
-        x.push(res.data[i].test_id);
-      }
-      setTids(x);
+      setData(res.data);
     } catch (e) {
       console.log(e);
     }
@@ -83,22 +70,28 @@ export default function UpcomingTests() {
   const classes = useStyles();
   return (
     <React.Fragment>
-      <Title>Upcoming Tests</Title>
+      <Title>Test History</Title>
       <Table size="small">
         <TableHead>
           <TableRow>
             <TableCell>#</TableCell>
             <TableCell>Test Name</TableCell>
-            <TableCell align="right">Attempt Test</TableCell>
+            <TableCell>ROM</TableCell>
+            <TableCell>Pain level</TableCell>
+            <TableCell align="right">Timestamp</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {tids.map((tid, i) => (
-            <TestRow tid={tid} key={i} id={i + 1} />
+          {data.map((d, i) => (
+            <TestRow hist={d} key={i} id={i + 1} />
           ))}
         </TableBody>
       </Table>
-      <div className={classes.seeMore}></div>
+      <div className={classes.seeMore}>
+        <Typography variant="subtitle2" color="secondary" align="center">
+          Physiocs
+        </Typography>
+      </div>
     </React.Fragment>
   );
 }

@@ -11,6 +11,7 @@ import Link from "@material-ui/core/Link";
 import Chart from "./chart";
 import Predictions from "./predictions";
 import UpcomingTests from "./upcomingTests";
+import TestHistory from "./testHistory";
 
 function Copyright() {
   return (
@@ -134,6 +135,11 @@ export default function PatientDashboard() {
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <UpcomingTests />
+              </Paper>
+            </Grid>
+            <Grid item xs={12}>
+              <Paper className={classes.paper}>
+                <TestHistory />
               </Paper>
             </Grid>
           </Grid>
