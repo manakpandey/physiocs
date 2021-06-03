@@ -53,11 +53,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function RepCounter({ repResult = true, count, numReps }) {
+export default function RepCounter({ repResult, count, numReps }) {
   const classes = useStyles();
 
   if (count > numReps)
     console.error("Count value provided is greater than that of numReps");
+
+  function mapRepResult(x) {
+    if(x>repResult.length)
+      return -1;
+    else
+      return repResult[x];
+  }
 
   return (
     <div className={classes.cardContainer}>
@@ -67,22 +74,31 @@ export default function RepCounter({ repResult = true, count, numReps }) {
             Reps
           </Typography>
           <div className={classes.dotContainer}>
-            {[...Array(numReps).keys()].map((x) => {
+            {[...Array(numReps).keys()].map((x, index) => {
               if (++x <= count) {
-                return (
-                  <div key={++x} className={classes.completedRep}>
-                    <FiberManualRecordIcon style={{ fill: "#4caf50" }} />
-                  </div>
-                );
+                if(mapRepResult(x)==1) {
+                  return (
+                    <div key={++x} className={classes.completedRep}>
+                      <FiberManualRecordIcon style={{ fill: "#4caf50" }} />
+                    </div>
+                  );
+                }
+                else if(mapRepResult(x)==0) {
+                  return (
+                    <div key={++x} className={classes.completedRep}>
+                      <FiberManualRecordIcon style={{ fill: "#f57c00" }} />
+                    </div>
+                  );
+                }
               }
-              if (x == count + 1 && !repResult) {
+              /*if (x == count + 1 && !repResult) {
                 return (
                   <div key={++x} className={classes.completedRep}>
                     <FiberManualRecordIcon style={{ fill: "#f57c00" }} />
                   </div>
                 );
-              }
-              if (++x > count + 1) {
+              }*/
+              if (++x > count) {
                 return (
                   <div key={++x} className={classes.completedRep}>
                     <FiberManualRecordOutlinedIcon />

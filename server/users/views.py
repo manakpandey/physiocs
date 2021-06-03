@@ -31,30 +31,16 @@ class APIPasswordUpdateView(PasswordChangeView):
 
 
 def results(df, target):
-    # result = ""
-    # test_var = int(request.POST["target"])
-
-    # df = pd.read_csv("E:\\acad\\sem 6\\TARP\\physiocs\\server\\users\\data.csv")
-    print(df)
     X_train, X_test, y_train, y_test = train_test_split(df["X"].values.reshape(-1, 1), df["y"], test_size=0.1)
     regr = LinearRegression()
     regr.fit(X_train, y_train)
-    y_pred = regr.predict(X_test)
-    # plt.scatter(X_test, y_test, color='b')
-    # plt.plot(X_test, y_pred, color='k')
-    # plt.savefig("E:\\acad\\sem 6\\TARP\\physiocs\\server\\users\\graph.png")
-    # plt.show()
-    # joblib.dump(regr, "model.sav")
     days = round(regr.predict(np.array([target]).reshape(-1, 1)).tolist()[0], 1)
-    print("days", days)
     return int(days)
 
 
 # profile
 def updateUserDetails(request):
     pass
-
-
 
 
 # dashboard
@@ -90,7 +76,6 @@ def getTestHistory(request):
 
 
 def getUser(request):
-    print(request)
     if request.user.is_authenticated:
         q = UserDetails.objects.filter(uid=request.user)
         return JsonResponse(list(q.values()), safe=False)
@@ -109,40 +94,38 @@ def getPhysioUsers(request):
 def getPrediction(request):
     if request.user.is_authenticated:
         pid = UserDetails.objects.filter(uid=request.user)
-    l=pid.values()
-    
-    d=l.first()
-    a=set()
-    print(d["id"])
-    arr=[]
-    x=TestHistory.objects.filter(patient_id=d["id"])
-    print(x)
+    l = pid.values()
+
+    d = l.first()
+    a = set()
+    arr = []
+    x = TestHistory.objects.filter(patient_id=d["id"])
     for i in x:
         a.add(i.test_id)
-    
+
     for tid in a:
         ans = TestHistory.objects.filter(patient_id=d["id"], test_id=tid).order_by('-timestamp')[::-1]
-        for i in ans:
-            print(i.range)
-        
-        # q="SELECT range FROM users_testHistory WHERE patient_id="+str(pid)+"AND test_id="+str(tid)+ " ORDER BY timestamp ASC;"
-        range = []
+
+        r = []
         days = []
         i = 1
         for testPerformed in ans:
-            range.append(testPerformed.range)
+            r.append(testPerformed.range)
             days.append(i)
             i += 1
 
-        df = pd.DataFrame(list(zip(range, days)),
-                        columns=['X', 'y'])
+        df = pd.DataFrame(list(zip(r, days)),
+                          columns=['X', 'y'])
         target = TestDetails.objects.get(pk=tid).max_angle
 
         result = results(df, target)
         arr.append(result)
-    
-    ans=sum(arr)/len(arr)
-    return HttpResponse(ceil(ans))
+
+    if len(arr) == 0:
+        return HttpResponse(status=204)
+
+    ans = sum(arr) / len(arr)
+    return JsonResponse(ceil(ans), safe=False)
 
 
 def getTests(request):

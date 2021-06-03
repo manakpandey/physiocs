@@ -10,6 +10,7 @@ import "./index.scss";
 import RepCounter from "../RepCounter";
 import { Button, Typography } from "@material-ui/core";
 import { checkJoints } from "../../utils/getAngles";
+import { checkAngleWithinLimits } from "../../utils/checkRep";
 import FeedbackScale from "../FeedbackScale";
 
 function Timer({ duration, onComplete, play, k }) {
@@ -38,6 +39,7 @@ export const TakeTest = () => {
   const [start, setStart] = useState(false);
   const [ready, setReady] = useState(false);
   const [finished, setFinished] = useState(false);
+  const [currRepVerified, setCurrRepVerification] = useState([]);
   const [minA, setMinA] = useState(360);
   const [maxA, setMaxA] = useState(-1);
   const [range, setRange] = useState([]);
@@ -67,6 +69,15 @@ export const TakeTest = () => {
     const rang = range;
     rang.push(maxA - minA);
     console.log(rang);
+    console.log('min angle ',minA);
+    console.log('max angle ' ,maxA);
+    console.log('is max rep verified? ', checkAngleWithinLimits(maxA, testData?.max_angle));
+    console.log('is min rep verified? ', checkAngleWithinLimits(minA, testData?.min_angle));
+    if(checkAngleWithinLimits(maxA, testData?.max_angle) && checkAngleWithinLimits(minA, testData?.min_angle)) {
+      currRepVerified.push(1);
+    } else currRepVerified.push(0);
+    setMinA(360);
+    setMaxA(-1);
     setRange(rang);
 
     if (currRep == testData?.reps) setFinished(true);
@@ -74,6 +85,7 @@ export const TakeTest = () => {
 
   useEffect(() => {
     if (finished) submit();
+    console.log(currRepVerified);
   }, [feedback]);
   const history = useHistory();
   const submit = async () => {
@@ -90,6 +102,11 @@ export const TakeTest = () => {
       fd.append("feedback", feedback);
 
       console.log(rg, range);
+      console.log('form data is below')
+      for (var pair of fd.entries()) {
+        console.log(pair[0] + ", " + pair[1]);
+      }
+      console.log('is av rep verified? ', checkAngleWithinLimits(rg, testData?.max_angle));
       await axios.post(`${settings.API_SERVER}/api/auth/saveUserTest`, fd, {
         withCredentials: true,
       });
@@ -155,7 +172,7 @@ export const TakeTest = () => {
                     onComplete={() => handleReps()}
                   />
                 </div>
-                <RepCounter numReps={testData?.reps} count={currRep} />
+                <RepCounter numReps={testData?.reps} repResult={currRepVerified} count={currRep} />
                 <div className={"starter"}>
                   <Button
                     variant="contained"
