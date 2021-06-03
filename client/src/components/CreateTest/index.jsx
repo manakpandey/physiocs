@@ -100,8 +100,8 @@ export default function CreateTest() {
     formData.append("testName", testName);
     formData.append("testDescription", testDesc);
     formData.append("jointName", joint);
-    formData.append("minAngle", relaxAngle);
-    formData.append("maxAngle", flexAngle);
+    formData.append("maxAngle", relaxAngle);
+    formData.append("minAngle", flexAngle);
     formData.append("reps", numReps);
     //formData.append("img", file);
 
@@ -207,7 +207,7 @@ export default function CreateTest() {
                 required
                 fullWidth
                 id="relaxedAngle"
-                label="Relaxed Angle"
+                label="Relaxed Angle (max)"
                 type="decimal"
                 name="relaxedAngle"
                 value={relaxAngle}
@@ -221,7 +221,7 @@ export default function CreateTest() {
                 required
                 fullWidth
                 name="flexAngle"
-                label="Flexed Angle"
+                label="Flexed Angle (min)"
                 type="decimal"
                 id="flexedAngle"
                 value={flexAngle}
